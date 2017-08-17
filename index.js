@@ -14,8 +14,8 @@ app.use(morgan('combined'));
 
 const loginInfo = [
   {
-    username: "user",
-    password: "clever"
+    user: "will",
+    pw: "clever"
   }
 ];
 
@@ -29,16 +29,20 @@ app.get('/', (req, res) => {
   res.redirect('login');                //needs if statement to check for session login?
 });
 
-app.post('/checkInfo', (req, res) =>{
+app.post('/checkInfo', (req, res) =>{     //checks entered username and password against "loginInfo"
   let username = req.body.username;
   let password = req.body.password;
   loginInfo.forEach((item, index) =>{
-    if(req.body.enter === )
+    if(req.body.username === loginInfo[index].user && req.body.password === loginInfo[index].pw){
+      res.redirect('index');
+    } else {
+      res.redirect('login');
+    }
   });
-  console.log(username);
-  console.log(password);
+  // console.log(username);
+  // console.log(password);
 
-  //checks entered username and password against "loginInfo" username & password
+
 
 });
 
