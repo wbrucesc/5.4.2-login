@@ -3,6 +3,7 @@ const exphbs = require('express-handlebars');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const morgan = require('morgan');
+const parseurl = require('parseurl');
 
 const app = express();
 
@@ -11,6 +12,11 @@ app.set('view engine', 'handlebars');
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(morgan('combined'));
+app.use(session({
+  secret: 'yay',
+  resave: false,
+  saveUnitialized: true
+}));
 
 const loginInfo = [
   {
@@ -20,31 +26,48 @@ const loginInfo = [
 ];
 
 
+
+app.use((req, res, next) => {
+  let pathname = parseurl(req).pathname;
+  if (!req.session.loggedIn && pathname != '/login'){
+    res.redirect('login');
+  } else {
+  next();
+  }
+});
+
+
 app.get('/login', (req, res) => {
   res.render('login');                  //renders login page
 });
 
 app.get('/', (req, res) => {
   // res.render('index');           //upon loading index redirects to login page
-  res.redirect('login');                //needs if statement to check for session login?
+  res.render('index', {username: 'will'});                //needs if statement to check for session login?
 });
 
-app.post('/checkInfo', (req, res) =>{     //checks entered username and password against "loginInfo"
+app.post('/login', (req, res) => {     //checks entered username and password against "loginInfo"
   let username = req.body.username;
   let password = req.body.password;
-  loginInfo.forEach((item, index) =>{
-    if(req.body.username === loginInfo[index].user && req.body.password === loginInfo[index].pw){
-      res.redirect('index');
-    } else {
-      res.redirect('login');
+  console.log('here');
+  // loginInfo.forEach((item, index) =>{
+  for (var i = 0; i < loginInfo.length; i++) {
+    let login = loginInfo[i];
+    console.log('login', login);
+    if(login.user === req.body.username && login.pw === req.body.password){
+      console.log('here i am');
+      req.session.loggedIn = true;
     }
+  }
+  res.redirect('/');
+
   });
   // console.log(username);
   // console.log(password);
 
 
 
-});
+
 
 
 app.listen(3000);
