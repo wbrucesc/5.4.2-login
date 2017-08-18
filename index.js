@@ -42,8 +42,7 @@ app.get('/login', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  // res.render('index');           //upon loading index redirects to login page
-  res.render('index', {username: 'will'});                //needs if statement to check for session login?
+  res.render('index', {username: req.session.user});    //displays the session username on main page
 });
 
 app.post('/login', (req, res) => {     //checks entered username and password against "loginInfo"
@@ -57,6 +56,7 @@ app.post('/login', (req, res) => {     //checks entered username and password ag
     if(login.user === req.body.username && login.pw === req.body.password){
       console.log('here i am');
       req.session.loggedIn = true;
+      req.session.user = req.body.username;
     }
   }
   res.redirect('/');
